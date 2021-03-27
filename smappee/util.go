@@ -3,20 +3,30 @@ package smappee
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 )
 
-func (s *Smappee) newRequest(method string, path string, data interface{}) (*http.Response, error) {
+func (s *Smappee) newRequest(method string, path string, data interface{}, parameters ...url.Values) (*http.Response, error) {
 	body := new(bytes.Buffer)
 	json.NewEncoder(body).Encode(data)
 
 	req, _ := http.NewRequest(method, "https://"+host+path, body)
 
+	for _, param := range parameters {
+		req.URL.RawQuery = param.Encode()
+	}
+
 	req.Header.Add("Authorization", "Bearer "+s.accessToken)
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := s.client.Do(req)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 	return res, err
 }
 
