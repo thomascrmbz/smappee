@@ -2,35 +2,24 @@ package smappee
 
 import (
 	"encoding/json"
-	"net/http"
-	"net/url"
 )
 
-func (s *Smappee) newRequest(method string, path string) (*http.Response, error) {
-	req, _ := http.NewRequest(method, "https://"+host+path, nil)
-	res, err := s.client.Do(req)
-	return res, err
+// GetServiceLocations returns a list of all the service locations to which the specified user account has access to.
+func (s *Smappee) GetServiceLocations() *ServiceLocations {
+	res, _ := s.newRequest("GET", "/dev/v3/servicelocation", nil)
+	serviceLocations := ServiceLocations{}
+	json.NewDecoder(res.Body).Decode(&serviceLocations)
+	return &serviceLocations
 }
 
-func (s *Smappee) authenticate() {
-	data := url.Values{}
-	data.Set("grant_type", "password")
-	data.Set("client_id", s.clientID)
-	data.Set("client_secret", s.clientSecret)
-	data.Set("username", s.username)
-	data.Set("password", s.password)
-
-	res, _ := s.client.PostForm("https://"+host+"/dev/v1/oauth2/token", data)
-
-	tokenResponse := getTokenResponse{}
-	json.NewDecoder(res.Body).Decode(&tokenResponse)
-
-	s.accessToken = tokenResponse.AccessToken
-	s.refreshToken = tokenResponse.RefreshToken
+type ServiceLocations struct {
+	AppName          string             `json:"appName"`
+	ServiceLocations *[]ServiceLocation `json:"serviceLocations"`
 }
 
-type getTokenResponse struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	ExpiresIn    int    `json:"expires_in"`
+type ServiceLocation struct {
+	Name               string `json:"name"`
+	UUID               string `json:"serviceLocationUuid"`
+	ID                 int    `json:"serviceLocationId"`
+	DeviceSerialNumber string `json:"deviceSerialNumber"`
 }
