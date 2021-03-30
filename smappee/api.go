@@ -16,8 +16,8 @@ func (s *Smappee) GetServiceLocations() *ServiceLocations {
 }
 
 type ServiceLocations struct {
-	AppName          string             `json:"appName"`
-	ServiceLocations *[]ServiceLocation `json:"serviceLocations"`
+	AppName          string            `json:"appName"`
+	ServiceLocations []ServiceLocation `json:"serviceLocations"`
 }
 
 type ServiceLocation struct {
@@ -42,8 +42,8 @@ func (s *Smappee) GetElectricityConsumptions(serviceLocationID int, from time.Ti
 }
 
 type ElectricityConsumptions struct {
-	ServiceLocationID int                       `json:"serviceLocationId"`
-	Consumptions      *[]ElectricityConsumption `json:"consumptions"`
+	ServiceLocationID int                      `json:"serviceLocationId"`
+	Consumptions      []ElectricityConsumption `json:"consumptions"`
 }
 
 type ElectricityConsumption struct {
