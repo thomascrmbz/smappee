@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"net/url"
 )
@@ -51,4 +52,16 @@ type getTokenResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 	ExpiresIn    int    `json:"expires_in"`
+}
+
+func sum(list []float64) float64 {
+	total := 0.0
+	for _, value := range list {
+		total += value
+	}
+	return round(total)
+}
+
+func round(x float64) float64 {
+	return math.Round(x*10000) / 10000
 }
