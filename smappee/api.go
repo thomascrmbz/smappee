@@ -57,7 +57,7 @@ func (s *Smappee) GetElectricityConsumption(id int, timestamp ...time.Time) (Ele
 	c := electricityConsumptionsResponse.Consumptions[i]
 
 	electricityConsumption := ElectricityConsumption{
-		Timestamp:       c.Timestamp,
+		Timestamp:       time.Unix(0, c.Timestamp*int64(time.Millisecond)),
 		ConsumptionWh:   c.Consumption,
 		ConsumptionW:    c.Consumption * 12,
 		SolarWh:         c.Solar,

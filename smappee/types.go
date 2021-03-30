@@ -1,5 +1,7 @@
 package smappee
 
+import "time"
+
 type ServiceLocation struct {
 	Name               string `json:"name"`
 	UUID               string `json:"serviceLocationUuid"`
@@ -20,7 +22,7 @@ type serviceLocationResponse struct {
 }
 
 type ElectricityConsumption struct {
-	Timestamp       int
+	Timestamp       time.Time
 	ConsumptionWh   float32
 	ConsumptionW    float32
 	SolarWh         float32
@@ -48,7 +50,7 @@ type electricityConsumptionsResponse struct {
 }
 
 type electricityConsumptionResponse struct {
-	Timestamp        int
+	Timestamp        int64
 	Consumption      float32
 	Solar            float32
 	AlwaysOn         float32
