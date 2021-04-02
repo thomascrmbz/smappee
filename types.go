@@ -117,6 +117,7 @@ type ActiveConsumption struct {
 	ConsumptionW  float64
 	ConsumptionWh float64
 	Name          string
+	Phase         int
 }
 
 type ReactiveConsumption struct {

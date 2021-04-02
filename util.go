@@ -7,6 +7,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 func (s *Smappee) newRequest(method string, path string, data interface{}, parameters ...url.Values) (*http.Response, error) {
@@ -69,4 +70,13 @@ func round(x float64) float64 {
 type context struct {
 	Smappee         *Smappee
 	ServiceLocation *ServiceLocation
+}
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if strings.EqualFold(a, b) {
+			return true
+		}
+	}
+	return false
 }

@@ -81,18 +81,32 @@ func (s *Smappee) GetElectricityConsumptions(aggregation int, from time.Time, to
 	return electricityConsumptions, nil
 }
 
-func (ec *ElectricityConsumption) GetActiveConsumptions() ([]ActiveConsumption, error) {
+func (ec *ElectricityConsumption) GetActiveConsumptions(name ...string) ([]ActiveConsumption, error) {
 	mc, err := ec.ctx.Smappee.GetMeteringConfiguration(ec.ctx.ServiceLocation.ID)
 
 	activeConsumptions := []ActiveConsumption{}
 
 	for _, m := range mc.Measurements {
 		for _, channel := range m.Channels {
-			activeConsumptions = append(activeConsumptions, ActiveConsumption{
-				ConsumptionW:  round(ec.active[channel.ConsumptionIndex] * 12),
-				ConsumptionWh: ec.active[channel.ConsumptionIndex],
-				Name:          channel.Name,
-			})
+			if !(len(name) > 0 && !stringInSlice(channel.Name, name)) {
+				phase := 0
+
+				switch channel.Phase {
+				case "PHASEA":
+					phase = 0
+				case "PHASEB":
+					phase = 1
+				case "PHASEC":
+					phase = 2
+				}
+
+				activeConsumptions = append(activeConsumptions, ActiveConsumption{
+					ConsumptionW:  round(ec.active[channel.ConsumptionIndex] * 12),
+					ConsumptionWh: ec.active[channel.ConsumptionIndex],
+					Name:          channel.Name,
+					Phase:         phase,
+				})
+			}
 		}
 	}
 
