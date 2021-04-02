@@ -2,17 +2,28 @@ package smappee
 
 import (
 	"encoding/json"
+	"errors"
 	"net/url"
 	"strconv"
 	"time"
 )
 
 func (s *Smappee) GetServiceLocations() ([]ServiceLocation, error) {
-	// 	res, _ := s.newRequest("GET", "/dev/v3/servicelocation", nil)
-	// 	serviceLocations := ServiceLocations{}
-	// 	json.NewDecoder(res.Body).Decode(&serviceLocations)
-	// 	return serviceLocations
+	res, _ := s.newRequest("GET", "/dev/v3/servicelocation", nil)
+	serviceLocationsResponse := serviceLocationsResponse{}
+	json.NewDecoder(res.Body).Decode(&serviceLocationsResponse)
+
 	serviceLocations := []ServiceLocation{}
+
+	for _, sl := range serviceLocationsResponse.ServiceLocations {
+		serviceLocations = append(serviceLocations, ServiceLocation{
+			Name:               sl.Name,
+			UUID:               sl.UUID,
+			ID:                 sl.ID,
+			DeviceSerialNumber: sl.DeviceSerialNumber,
+		})
+	}
+
 	return serviceLocations, nil
 }
 
@@ -36,13 +47,12 @@ func (s *Smappee) CreateServiceLocation(sl ServiceLocation) (ServiceLocation, er
 }
 
 func (s *Smappee) GetElectricityConsumption(id int, timestamp ...time.Time) (ElectricityConsumption, error) {
-	from := time.Now().Add(-15 * time.Minute)
-	to := time.Now()
 
+	to := time.Now()
 	if len(timestamp) > 0 {
-		from = timestamp[0]
-		to = from.Add(15 * time.Minute)
+		to = timestamp[0]
 	}
+	from := to.Add(-15 * time.Minute)
 
 	parameters := url.Values{}
 	parameters.Set("aggregation", strconv.Itoa(1))
@@ -53,10 +63,14 @@ func (s *Smappee) GetElectricityConsumption(id int, timestamp ...time.Time) (Ele
 	electricityConsumptionsResponse := electricityConsumptionsResponse{}
 	json.NewDecoder(res.Body).Decode(&electricityConsumptionsResponse)
 
+	if len(electricityConsumptionsResponse.Consumptions) == 0 {
+		return ElectricityConsumption{}, errors.New("no datapoint found")
+	}
+
 	i := len(electricityConsumptionsResponse.Consumptions) - 1
 	c := electricityConsumptionsResponse.Consumptions[i]
 
-	electricityConsumption := ElectricityConsumption{
+	return ElectricityConsumption{
 		Timestamp:       time.Unix(0, c.Timestamp*int64(time.Millisecond)),
 		ConsumptionWh:   c.Consumption,
 		ConsumptionW:    c.Consumption * 12,
@@ -76,9 +90,7 @@ func (s *Smappee) GetElectricityConsumption(id int, timestamp ...time.Time) (Ele
 		ReactiveW:       round(sum(c.Reactive) * 12),
 		Voltages:        c.Voltages,
 		Current:         sum(c.Current),
-	}
-
-	return electricityConsumption, nil
+	}, nil
 }
 
 func (s *Smappee) GetElectricityConsumptions(aggregation int, from time.Time, to ...time.Time) ([]ElectricityConsumption, error) {

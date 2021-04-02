@@ -4,14 +4,14 @@ import "time"
 
 type ServiceLocation struct {
 	Name               string `json:"name"`
-	UUID               string `json:"serviceLocationUuid"`
-	ID                 int    `json:"serviceLocationId"`
-	DeviceSerialNumber string `json:"deviceSerialNumber"`
+	UUID               string `json:"uuid"`
+	ID                 int    `json:"id"`
+	DeviceSerialNumber string `json:"device_serial_number"`
 }
 
 type serviceLocationsResponse struct {
-	AppName          string            `json:"appName"`
-	ServiceLocations []ServiceLocation `json:"serviceLocations"`
+	AppName          string                    `json:"appName"`
+	ServiceLocations []serviceLocationResponse `json:"serviceLocations"`
 }
 
 type serviceLocationResponse struct {
