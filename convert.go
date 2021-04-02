@@ -20,7 +20,7 @@ func convertServiceLocation(sli serviceLocationResponse) ServiceLocation {
 	}
 }
 
-func convertElectricityConsumption(c electricityConsumptionResponse) ElectricityConsumption {
+func convertElectricityConsumption(ctx *context, c electricityConsumptionResponse) ElectricityConsumption {
 	return ElectricityConsumption{
 		Timestamp:       time.Unix(0, c.Timestamp*int64(time.Millisecond)),
 		ConsumptionWh:   c.Consumption,
@@ -35,11 +35,14 @@ func convertElectricityConsumption(c electricityConsumptionResponse) Electricity
 		GridExportW:     c.GridExport * 12,
 		SelfSufficiency: c.SelfSufficiency,
 		SelfConsumption: c.SelfConsumption,
+		active:          c.Active,
 		ActiveWh:        sum(c.Active),
 		ActiveW:         round(sum(c.Active) * 12),
 		ReactiveWh:      sum(c.Reactive),
 		ReactiveW:       round(sum(c.Reactive) * 12),
 		Voltages:        c.Voltages,
 		Current:         sum(c.Current),
+
+		ctx: ctx,
 	}
 }

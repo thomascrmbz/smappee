@@ -68,7 +68,12 @@ func (s *Smappee) GetElectricityConsumption(id int, timestamp ...time.Time) (Ele
 	i := len(electricityConsumptionsResponse.Consumptions) - 1
 	c := electricityConsumptionsResponse.Consumptions[i]
 
-	return convertElectricityConsumption(c), err
+	return convertElectricityConsumption(&context{
+		Smappee: s,
+		ServiceLocation: &ServiceLocation{
+			ID: id,
+		},
+	}, c), err
 }
 
 func (s *Smappee) GetElectricityConsumptions(aggregation int, from time.Time, to ...time.Time) ([]ElectricityConsumption, error) {
@@ -76,17 +81,36 @@ func (s *Smappee) GetElectricityConsumptions(aggregation int, from time.Time, to
 	return electricityConsumptions, nil
 }
 
-func (ec *ElectricityConsumption) GetActiveConsumption() ([]ActiveConsumption, error) {
+func (ec *ElectricityConsumption) GetActiveConsumptions() ([]ActiveConsumption, error) {
+	mc, err := ec.ctx.Smappee.GetMeteringConfiguration(ec.ctx.ServiceLocation.ID)
+
 	activeConsumptions := []ActiveConsumption{}
-	return activeConsumptions, nil
+
+	for _, m := range mc.Measurements {
+		for _, channel := range m.Channels {
+			activeConsumptions = append(activeConsumptions, ActiveConsumption{
+				ConsumptionW:  round(ec.active[channel.ConsumptionIndex] * 12),
+				ConsumptionWh: ec.active[channel.ConsumptionIndex],
+				Name:          channel.Name,
+			})
+		}
+	}
+
+	return activeConsumptions, err
 }
 
-func (ec *ElectricityConsumption) GetReactiveConsumption() ([]ReactiveConsumption, error) {
+func (ec *ElectricityConsumption) GetReactiveConsumptions() ([]ReactiveConsumption, error) {
 	reactiveConsumptions := []ReactiveConsumption{}
 	return reactiveConsumptions, nil
 }
 
 func (s *Smappee) GetMeteringConfiguration(id int) (MeteringConfiguration, error) {
-	meteringConfiguration := MeteringConfiguration{}
-	return meteringConfiguration, nil
+	res, err := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/meteringconfiguration", nil)
+	meteringConfigurationResponse := meteringConfigurationResponse{}
+	json.NewDecoder(res.Body).Decode(&meteringConfigurationResponse)
+
+	meteringConfiguration := MeteringConfiguration{
+		Measurements: meteringConfigurationResponse.Measurements,
+	}
+	return meteringConfiguration, err
 }

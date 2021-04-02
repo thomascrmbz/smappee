@@ -65,3 +65,8 @@ func sum(list []float64) float64 {
 func round(x float64) float64 {
 	return math.Round(x*10000) / 10000
 }
+
+type context struct {
+	Smappee         *Smappee
+	ServiceLocation *ServiceLocation
+}

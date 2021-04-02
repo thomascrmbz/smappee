@@ -73,11 +73,14 @@ type ElectricityConsumption struct {
 	SelfConsumption float32
 	ActiveWh        float64
 	ActiveW         float64
+	active          []float64
 	ReactiveWh      float64
 	ReactiveW       float64
 	Voltages        [3]float32
 	Current         float64
 	// LineVoltages, PhaseVoltages
+
+	ctx *context
 }
 
 type electricityConsumptionsResponse struct {
@@ -111,10 +114,33 @@ type electricityConsumptionResponse struct {
 }
 
 type ActiveConsumption struct {
+	ConsumptionW  float64
+	ConsumptionWh float64
+	Name          string
 }
 
 type ReactiveConsumption struct {
 }
 
 type MeteringConfiguration struct {
+	Measurements []Measurement
+}
+
+type meteringConfigurationResponse struct {
+	Measurements []Measurement
+	PhaseType    string
+}
+
+type Measurement struct {
+	ID       int
+	Name     string
+	Type     string
+	Channels []Channel
+}
+
+type Channel struct {
+	ConsumptionIndex int
+	PowerTopicIndex  int
+	Name             string
+	Phase            string
 }
