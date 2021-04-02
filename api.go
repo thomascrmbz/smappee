@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Smappee) GetServiceLocations() ([]ServiceLocation, error) {
-	res, _ := s.newRequest("GET", "/dev/v3/servicelocation", nil)
+	res, err := s.newRequest("GET", "/dev/v3/servicelocation", nil)
 	serviceLocationsResponse := serviceLocationsResponse{}
 	json.NewDecoder(res.Body).Decode(&serviceLocationsResponse)
 
@@ -24,11 +24,11 @@ func (s *Smappee) GetServiceLocations() ([]ServiceLocation, error) {
 		})
 	}
 
-	return serviceLocations, nil
+	return serviceLocations, err
 }
 
 func (s *Smappee) GetServiceLocation(id int) (ServiceLocation, error) {
-	res, _ := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/info", nil)
+	res, err := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/info", nil)
 	sli := serviceLocationInfoResponse{}
 	json.NewDecoder(res.Body).Decode(&sli)
 
@@ -46,7 +46,7 @@ func (s *Smappee) GetServiceLocation(id int) (ServiceLocation, error) {
 		ChannelsConfiguration: sli.ChannelsConfiguration,
 
 		From: time.Unix(0, sli.From*int64(time.Millisecond)),
-	}, nil
+	}, err
 }
 
 func (s *Smappee) DeleteServiceLocation(id int) error {
@@ -76,7 +76,7 @@ func (s *Smappee) GetElectricityConsumption(id int, timestamp ...time.Time) (Ele
 	parameters.Set("from", strconv.FormatInt(from.Unix(), 10))
 	parameters.Set("to", strconv.FormatInt(to.Unix(), 10))
 
-	res, _ := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/consumption", nil, parameters)
+	res, err := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/consumption", nil, parameters)
 	electricityConsumptionsResponse := electricityConsumptionsResponse{}
 	json.NewDecoder(res.Body).Decode(&electricityConsumptionsResponse)
 
@@ -107,7 +107,7 @@ func (s *Smappee) GetElectricityConsumption(id int, timestamp ...time.Time) (Ele
 		ReactiveW:       round(sum(c.Reactive) * 12),
 		Voltages:        c.Voltages,
 		Current:         sum(c.Current),
-	}, nil
+	}, err
 }
 
 func (s *Smappee) GetElectricityConsumptions(aggregation int, from time.Time, to ...time.Time) ([]ElectricityConsumption, error) {
