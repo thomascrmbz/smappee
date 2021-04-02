@@ -7,6 +7,16 @@ type ServiceLocation struct {
 	UUID               string `json:"uuid"`
 	ID                 int    `json:"id"`
 	DeviceSerialNumber string `json:"device_serial_number"`
+
+	Latitude            float32
+	Longtitude          float32
+	ElectricityCost     float32
+	ElectricityCurrency string
+	Timezone            string
+
+	ChannelsConfiguration ChannelsConfiguration
+
+	From time.Time
 }
 
 type serviceLocationsResponse struct {
@@ -19,6 +29,39 @@ type serviceLocationResponse struct {
 	UUID               string `json:"serviceLocationUuid"`
 	ID                 int    `json:"serviceLocationId"`
 	DeviceSerialNumber string `json:"deviceSerialNumber"`
+}
+
+type serviceLocationInfoResponse struct {
+	Latitude              float32 `json:"lat"`
+	Longtitude            float32 `json:"lon"`
+	ElectricityCost       float32
+	ElectricityCurrency   string
+	Timezone              string
+	Appliances            []interface{} // TODO
+	Actuators             []interface{} // TODO
+	Sensors               []interface{} // TODO
+	Monitors              []interface{} // TODO
+	ChannelsConfiguration ChannelsConfiguration
+	Custom                []interface{} // TODO
+	UUID                  string        `json:"serviceLocationUuid"`
+	ID                    int           `json:"serviceLocationId"`
+	Name                  string        `json:"name"`
+	DeviceSerialNumber    string        `json:"deviceSerialNumber"`
+	From                  int64
+}
+
+type ChannelsConfiguration struct {
+	InputChannels []InputChannelResponse
+}
+
+type InputChannelResponse struct {
+	CTInput            int
+	Phase              int
+	InputChannelType   string
+	Reversed           bool
+	Nilm               bool
+	Balanced           bool
+	InputChannelCTType string
 }
 
 type ElectricityConsumption struct {

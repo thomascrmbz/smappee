@@ -22,8 +22,6 @@ func (s *Smappee) newRequest(method string, path string, data interface{}, param
 	req.Header.Add("Authorization", "Bearer "+s.accessToken)
 	req.Header.Add("Content-Type", "application/json")
 
-	fmt.Println(req)
-
 	res, err := s.client.Do(req)
 
 	if err != nil {

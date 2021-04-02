@@ -28,8 +28,25 @@ func (s *Smappee) GetServiceLocations() ([]ServiceLocation, error) {
 }
 
 func (s *Smappee) GetServiceLocation(id int) (ServiceLocation, error) {
-	serviceLocation := ServiceLocation{}
-	return serviceLocation, nil
+	res, _ := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/info", nil)
+	sli := serviceLocationInfoResponse{}
+	json.NewDecoder(res.Body).Decode(&sli)
+
+	return ServiceLocation{
+		Name:                sli.Name,
+		UUID:                sli.UUID,
+		ID:                  sli.ID,
+		DeviceSerialNumber:  sli.DeviceSerialNumber,
+		Latitude:            sli.Latitude,
+		Longtitude:          sli.Longtitude,
+		ElectricityCost:     sli.ElectricityCost,
+		ElectricityCurrency: sli.ElectricityCurrency,
+		Timezone:            sli.Timezone,
+
+		ChannelsConfiguration: sli.ChannelsConfiguration,
+
+		From: time.Unix(0, sli.From*int64(time.Millisecond)),
+	}, nil
 }
 
 func (s *Smappee) DeleteServiceLocation(id int) error {
