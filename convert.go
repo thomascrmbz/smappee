@@ -2,7 +2,7 @@ package smappee
 
 import "time"
 
-func convertServiceLocation(sli serviceLocationInfoResponse) ServiceLocation {
+func convertServiceLocation(sli serviceLocationResponse) ServiceLocation {
 	return ServiceLocation{
 		Name:                sli.Name,
 		UUID:                sli.UUID,

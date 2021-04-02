@@ -25,13 +25,10 @@ type serviceLocationsResponse struct {
 }
 
 type serviceLocationResponse struct {
-	Name               string `json:"name"`
-	UUID               string `json:"serviceLocationUuid"`
-	ID                 int    `json:"serviceLocationId"`
-	DeviceSerialNumber string `json:"deviceSerialNumber"`
-}
-
-type serviceLocationInfoResponse struct {
+	Name                  string  `json:"name"`
+	UUID                  string  `json:"serviceLocationUuid"`
+	ID                    int     `json:"serviceLocationId"`
+	DeviceSerialNumber    string  `json:"deviceSerialNumber"`
 	Latitude              float32 `json:"lat"`
 	Longtitude            float32 `json:"lon"`
 	ElectricityCost       float32
@@ -43,10 +40,6 @@ type serviceLocationInfoResponse struct {
 	Monitors              []interface{} // TODO
 	ChannelsConfiguration ChannelsConfiguration
 	Custom                []interface{} // TODO
-	UUID                  string        `json:"serviceLocationUuid"`
-	ID                    int           `json:"serviceLocationId"`
-	Name                  string        `json:"name"`
-	DeviceSerialNumber    string        `json:"deviceSerialNumber"`
 	From                  int64
 }
 

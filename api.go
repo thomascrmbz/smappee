@@ -16,12 +16,7 @@ func (s *Smappee) GetServiceLocations() ([]ServiceLocation, error) {
 	serviceLocations := []ServiceLocation{}
 
 	for _, sl := range serviceLocationsResponse.ServiceLocations {
-		serviceLocations = append(serviceLocations, ServiceLocation{
-			Name:               sl.Name,
-			UUID:               sl.UUID,
-			ID:                 sl.ID,
-			DeviceSerialNumber: sl.DeviceSerialNumber,
-		})
+		serviceLocations = append(serviceLocations, convertServiceLocation(sl))
 	}
 
 	return serviceLocations, err
@@ -29,7 +24,7 @@ func (s *Smappee) GetServiceLocations() ([]ServiceLocation, error) {
 
 func (s *Smappee) GetServiceLocation(id int) (ServiceLocation, error) {
 	res, err := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/info", nil)
-	sli := serviceLocationInfoResponse{}
+	sli := serviceLocationResponse{}
 	json.NewDecoder(res.Body).Decode(&sli)
 
 	return convertServiceLocation(sli), err
