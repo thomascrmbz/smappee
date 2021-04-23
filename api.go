@@ -54,8 +54,8 @@ func (s *Smappee) GetElectricityConsumption(id int, timestamp ...time.Time) (Ele
 
 	parameters := url.Values{}
 	parameters.Set("aggregation", strconv.Itoa(1))
-	parameters.Set("from", strconv.FormatInt(from.Unix(), 10))
-	parameters.Set("to", strconv.FormatInt(to.Unix(), 10))
+	parameters.Set("from", strconv.FormatInt(from.UnixNano()/1e6, 10))
+	parameters.Set("to", strconv.FormatInt(to.UnixNano()/1e6, 10))
 
 	res, err := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/consumption", nil, parameters)
 	electricityConsumptionsResponse := electricityConsumptionsResponse{}
