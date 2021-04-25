@@ -53,33 +53,42 @@ func (s *Smappee) GetElectricityConsumption(id int, timestamp ...time.Time) (Ele
 	}
 	from := to.Add(-15 * time.Minute)
 
+	consumptions, err := s.GetElectricityConsumptions(id, 1, from)
+
+	return consumptions[len(consumptions)-1], err
+}
+
+func (s *Smappee) GetElectricityConsumptions(id int, aggregation int, from time.Time, to ...time.Time) ([]ElectricityConsumption, error) {
+	to_time := time.Now()
+	if len(to) > 0 {
+		to_time = to[0]
+	}
+
 	parameters := url.Values{}
-	parameters.Set("aggregation", strconv.Itoa(1))
+	parameters.Set("aggregation", strconv.Itoa(aggregation))
 	parameters.Set("from", strconv.FormatInt(from.UnixNano()/1e6, 10))
-	parameters.Set("to", strconv.FormatInt(to.UnixNano()/1e6, 10))
+	parameters.Set("to", strconv.FormatInt(to_time.UnixNano()/1e6, 10))
 
 	res, err := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/consumption", nil, parameters)
 	electricityConsumptionsResponse := electricityConsumptionsResponse{}
 	json.NewDecoder(res.Body).Decode(&electricityConsumptionsResponse)
 
 	if len(electricityConsumptionsResponse.Consumptions) == 0 {
-		return ElectricityConsumption{}, errors.New("no datapoint found")
+		return []ElectricityConsumption{}, errors.New("no datapoint found")
 	}
 
-	i := len(electricityConsumptionsResponse.Consumptions) - 1
-	c := electricityConsumptionsResponse.Consumptions[i]
-
-	return convertElectricityConsumption(&context{
-		Smappee: s,
-		ServiceLocation: &ServiceLocation{
-			ID: id,
-		},
-	}, c), err
-}
-
-func (s *Smappee) GetElectricityConsumptions(aggregation int, from time.Time, to ...time.Time) ([]ElectricityConsumption, error) {
 	electricityConsumptions := []ElectricityConsumption{}
-	return electricityConsumptions, nil
+
+	for _, c := range electricityConsumptionsResponse.Consumptions {
+		electricityConsumptions = append(electricityConsumptions, convertElectricityConsumption(&context{
+			Smappee: s,
+			ServiceLocation: &ServiceLocation{
+				ID: id,
+			},
+		}, c))
+	}
+
+	return electricityConsumptions, err
 }
 
 func (ec *ElectricityConsumption) GetActiveConsumptions(name ...string) ([]ActiveConsumption, error) {
