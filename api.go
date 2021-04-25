@@ -31,7 +31,8 @@ func (s *Smappee) GetServiceLocation(id int) (ServiceLocation, error) {
 }
 
 func (s *Smappee) DeleteServiceLocation(id int) error {
-	return nil
+	_, err := s.newRequest("DELETE", "/dev/v2/servicelocation/"+strconv.Itoa(id), nil)
+	return err
 }
 
 func (s *Smappee) UpdateServiceLocation(id int, sl ServiceLocation) (ServiceLocation, error) {
