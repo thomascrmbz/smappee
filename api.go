@@ -2,7 +2,6 @@ package smappee
 
 import (
 	"encoding/json"
-	"errors"
 	"net/url"
 	"strconv"
 	"time"
@@ -74,7 +73,7 @@ func (s *Smappee) GetElectricityConsumptions(id int, aggregation int, from time.
 	json.NewDecoder(res.Body).Decode(&electricityConsumptionsResponse)
 
 	if len(electricityConsumptionsResponse.Consumptions) == 0 {
-		return []ElectricityConsumption{}, errors.New("no datapoint found")
+		return []ElectricityConsumption{}, ErrorNoDataPoint
 	}
 
 	electricityConsumptions := []ElectricityConsumption{}
