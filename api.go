@@ -2,7 +2,6 @@ package smappee
 
 import (
 	"encoding/json"
-	"errors"
 	"net/url"
 	"strconv"
 	"time"
