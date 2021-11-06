@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
-	"github.com/thomascrmbz/smappee"
 	"gotest.tools/v3/assert"
+	"thomascrmbz.com/smappee"
 )
 
 var (

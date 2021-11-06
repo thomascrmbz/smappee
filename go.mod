@@ -1,4 +1,4 @@
-module github.com/thomascrmbz/smappee
+module thomascrmbz.com/smappee
 
 go 1.15
 
