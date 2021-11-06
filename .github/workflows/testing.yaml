@@ -15,3 +15,8 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
       - run: go test
+        env:
+          SMAPPEE_CLIENT_ID:      ${{ secrets.SMAPPEE_CLIENT_ID }}
+          SMAPPEE_CLIENT_SECRET:  ${{ secrets.SMAPPEE_CLIENT_SECRET }}
+          SMAPPEE_USERNAME:       ${{ secrets.SMAPPEE_USERNAME }}
+          SMAPPEE_PASSWORD:       ${{ secrets.SMAPPEE_PASSWORD }}
