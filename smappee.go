@@ -14,7 +14,7 @@ type Smappee struct {
 	client *http.Client
 }
 
-func NewSmappee(clientID string, clientSecret string, username string, password string) *Smappee {
+func NewSmappee(clientID string, clientSecret string, username string, password string) (*Smappee, error) {
 	smappee := &Smappee{
 		clientID:     clientID,
 		clientSecret: clientSecret,
@@ -23,7 +23,5 @@ func NewSmappee(clientID string, clientSecret string, username string, password 
 		client:       http.DefaultClient,
 	}
 
-	smappee.authenticate()
-
-	return smappee
+	return smappee, smappee.authenticate()
 }

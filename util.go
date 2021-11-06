@@ -32,7 +32,7 @@ func (s *Smappee) newRequest(method string, path string, data interface{}, param
 	return res, err
 }
 
-func (s *Smappee) authenticate() {
+func (s *Smappee) authenticate() error {
 	data := url.Values{}
 	data.Set("grant_type", "password")
 	data.Set("client_id", s.clientID)
@@ -40,13 +40,19 @@ func (s *Smappee) authenticate() {
 	data.Set("username", s.username)
 	data.Set("password", s.password)
 
-	res, _ := s.client.PostForm("https://"+host+"/dev/v1/oauth2/token", data)
+	res, err := s.client.PostForm("https://"+host+"/dev/v1/oauth2/token", data)
+
+	if res.StatusCode != 200 {
+		return ErrorClientConnection(res.Status)
+	}
 
 	tokenResponse := getTokenResponse{}
 	json.NewDecoder(res.Body).Decode(&tokenResponse)
 
 	s.accessToken = tokenResponse.AccessToken
 	s.refreshToken = tokenResponse.RefreshToken
+
+	return err
 }
 
 type getTokenResponse struct {

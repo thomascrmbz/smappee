@@ -1,10 +1,13 @@
 package smappee
 
-
 import (
-  "errors"
+	"errors"
 )
 
 var (
-  ErrorNoDataPoint error = errors.New("no datapoint found")
+	ErrorNoDataPoint error = errors.New("no datapoint found")
 )
+
+func ErrorClientConnection(status string) error {
+	return errors.New("Could't connect to smappee: " + status)
+}
