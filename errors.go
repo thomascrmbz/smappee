@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	ErrorNoDataPoint error = errors.New("no datapoint found")
+	ErrorNoDataPoint = errors.New("no datapoint found")
 )
 
 func ErrorClientConnection(status string) error {

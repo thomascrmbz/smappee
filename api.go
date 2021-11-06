@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// GetServiceLocations returns a list of all the service locations to which the specified user account has access to.
 func (s *Smappee) GetServiceLocations() ([]ServiceLocation, error) {
 	res, err := s.newRequest("GET", "/dev/v3/servicelocation", nil)
 	serviceLocationsResponse := serviceLocationsResponse{}
@@ -21,6 +22,7 @@ func (s *Smappee) GetServiceLocations() ([]ServiceLocation, error) {
 	return serviceLocations, err
 }
 
+// GetServiceLocation returns detailed information of a specific service location
 func (s *Smappee) GetServiceLocation(id int) (ServiceLocation, error) {
 	res, err := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/info", nil)
 	sli := serviceLocationResponse{}
@@ -29,21 +31,25 @@ func (s *Smappee) GetServiceLocation(id int) (ServiceLocation, error) {
 	return convertServiceLocation(sli), err
 }
 
+// DeleteServiceLocation deletes a service location.
 func (s *Smappee) DeleteServiceLocation(id int) error {
 	_, err := s.newRequest("DELETE", "/dev/v2/servicelocation/"+strconv.Itoa(id), nil)
 	return err
 }
 
+// UpdateServiceLocation updates the attributes of a service location that are specified.
 func (s *Smappee) UpdateServiceLocation(id int, sl ServiceLocation) (ServiceLocation, error) {
 	serviceLocation := ServiceLocation{}
 	return serviceLocation, nil
 }
 
+// CreateServiceLocation creates a service location.
 func (s *Smappee) CreateServiceLocation(sl ServiceLocation) (ServiceLocation, error) {
 	serviceLocation := ServiceLocation{}
 	return serviceLocation, nil
 }
 
+// GetElectricityConsumption returns the electricity consumption on a specific service location during a specified range of time.
 func (s *Smappee) GetElectricityConsumption(id int, timestamp ...time.Time) (ElectricityConsumption, error) {
 
 	to := time.Now()
@@ -57,16 +63,17 @@ func (s *Smappee) GetElectricityConsumption(id int, timestamp ...time.Time) (Ele
 	return consumptions[len(consumptions)-1], err
 }
 
+// GetElectricityConsumptions returns a list of electricity consumptions on a specific service location during a specified range of time.
 func (s *Smappee) GetElectricityConsumptions(id int, aggregation int, from time.Time, to ...time.Time) ([]ElectricityConsumption, error) {
-	to_time := time.Now()
+	toTime := time.Now()
 	if len(to) > 0 {
-		to_time = to[0]
+		toTime = to[0]
 	}
 
 	parameters := url.Values{}
 	parameters.Set("aggregation", strconv.Itoa(aggregation))
 	parameters.Set("from", strconv.FormatInt(from.UnixNano()/1e6, 10))
-	parameters.Set("to", strconv.FormatInt(to_time.UnixNano()/1e6, 10))
+	parameters.Set("to", strconv.FormatInt(toTime.UnixNano()/1e6, 10))
 
 	res, err := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/consumption", nil, parameters)
 	electricityConsumptionsResponse := electricityConsumptionsResponse{}
@@ -90,6 +97,7 @@ func (s *Smappee) GetElectricityConsumptions(id int, aggregation int, from time.
 	return electricityConsumptions, err
 }
 
+// GetActiveConsumptions returns a list of ActiveConsumption on a specific ElectricityConsumption
 func (ec *ElectricityConsumption) GetActiveConsumptions(name ...string) ([]ActiveConsumption, error) {
 	mc, err := ec.ctx.Smappee.GetMeteringConfiguration(ec.ctx.ServiceLocation.ID)
 
@@ -122,11 +130,13 @@ func (ec *ElectricityConsumption) GetActiveConsumptions(name ...string) ([]Activ
 	return activeConsumptions, err
 }
 
+// GetReactiveConsumptions returns a list of ReactiveConsumption on a specific ElectricityConsumption
 func (ec *ElectricityConsumption) GetReactiveConsumptions() ([]ReactiveConsumption, error) {
 	reactiveConsumptions := []ReactiveConsumption{}
 	return reactiveConsumptions, nil
 }
 
+// GetMeteringConfiguration returns detailed information of a specific service location.
 func (s *Smappee) GetMeteringConfiguration(id int) (MeteringConfiguration, error) {
 	res, err := s.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(id)+"/meteringconfiguration", nil)
 	meteringConfigurationResponse := meteringConfigurationResponse{}

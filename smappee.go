@@ -14,6 +14,7 @@ type Smappee struct {
 	client *http.Client
 }
 
+// NewSmappee creates a new smappee client
 func NewSmappee(clientID string, clientSecret string, username string, password string) (*Smappee, error) {
 	smappee := &Smappee{
 		clientID:     clientID,
