@@ -70,6 +70,9 @@ func (ec *ElectricityConsumption) GetActiveConsumptions(name ...string) ([]Activ
 
 // Metering Configuration
 func (s *Smappee) GetMeteringConfiguration(id int) (MeteringConfiguration, error)
+
+func (sl *ServiceLocation) GetSensorConsumptions(id int, aggregation int, from time.Time, to ...time.Time) ([]SensorConsumption, error)
+
 ```
 
 Read the [reference docs](https://pkg.go.dev/thomascrmbz.com/smappee) for more information about how to use all the methods.

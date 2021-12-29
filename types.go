@@ -17,6 +17,8 @@ type ServiceLocation struct {
 	ChannelsConfiguration ChannelsConfiguration
 
 	From time.Time
+
+	ctx *context
 }
 
 type serviceLocationsResponse struct {
@@ -144,4 +146,34 @@ type Channel struct {
 	PowerTopicIndex  int
 	Name             string
 	Phase            string
+}
+
+type sensorConsumptionsResponse struct {
+	ServiceLocationID int                         `json:"serviceLocationId"`
+	SensorID          int                         `json:"sensorId"`
+	Records           []sensorConsumptionResponse `json:"records"`
+}
+
+type sensorConsumptionResponse struct {
+	Timestamp   int64   `json:"timestamp"`
+	Value1      float32 `json:"value1"`
+	Value2      float32 `json:"value2"`
+	Value3      float32 `json:"value3"`
+	Value4      float32 `json:"value4"`
+	Temperature float32 `json:"temperature"`
+	Humidity    float32 `json:"humidity"`
+	Battery     float32 `json:"battery"`
+}
+
+type SensorConsumption struct {
+	Timestamp time.Time
+
+	Value1 float32
+	Value2 float32
+	Value3 float32
+	Value4 float32
+
+	Temperature float32
+	Humidity    float32
+	Battery     float32
 }

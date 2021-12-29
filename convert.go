@@ -2,7 +2,7 @@ package smappee
 
 import "time"
 
-func convertServiceLocation(sli serviceLocationResponse) ServiceLocation {
+func convertServiceLocation(ctx *context, sli serviceLocationResponse) ServiceLocation {
 	return ServiceLocation{
 		Name:                sli.Name,
 		UUID:                sli.UUID,
@@ -17,6 +17,8 @@ func convertServiceLocation(sli serviceLocationResponse) ServiceLocation {
 		ChannelsConfiguration: sli.ChannelsConfiguration,
 
 		From: time.Unix(0, sli.From*int64(time.Millisecond)),
+
+		ctx: ctx,
 	}
 }
 
@@ -44,5 +46,20 @@ func convertElectricityConsumption(ctx *context, c electricityConsumptionRespons
 		Current:         sum(c.Current),
 
 		ctx: ctx,
+	}
+}
+
+func convertSensorConsumption(sensor sensorConsumptionResponse) SensorConsumption {
+	return SensorConsumption{
+		Timestamp: time.Unix(0, sensor.Timestamp*int64(time.Millisecond)),
+
+		Value1: sensor.Value1,
+		Value2: sensor.Value2,
+		Value3: sensor.Value3,
+		Value4: sensor.Value4,
+
+		Temperature: sensor.Temperature,
+		Humidity:    sensor.Humidity,
+		Battery:     sensor.Battery,
 	}
 }

@@ -16,7 +16,7 @@ func (s *Smappee) GetServiceLocations() ([]ServiceLocation, error) {
 	serviceLocations := []ServiceLocation{}
 
 	for _, sl := range serviceLocationsResponse.ServiceLocations {
-		serviceLocations = append(serviceLocations, convertServiceLocation(sl))
+		serviceLocations = append(serviceLocations, convertServiceLocation(&context{Smappee: s}, sl))
 	}
 
 	return serviceLocations, err
@@ -28,7 +28,7 @@ func (s *Smappee) GetServiceLocation(id int) (ServiceLocation, error) {
 	sli := serviceLocationResponse{}
 	json.NewDecoder(res.Body).Decode(&sli)
 
-	return convertServiceLocation(sli), err
+	return convertServiceLocation(&context{Smappee: s}, sli), err
 }
 
 // DeleteServiceLocation deletes a service location.
@@ -146,4 +146,34 @@ func (s *Smappee) GetMeteringConfiguration(id int) (MeteringConfiguration, error
 		Measurements: meteringConfigurationResponse.Measurements,
 	}
 	return meteringConfiguration, err
+}
+
+// GetSensorConsumptions returns the consumption of energy on a specific sensor that is active on a specific service location during a specified range of time.
+func (sl *ServiceLocation) GetSensorConsumptions(id int, aggregation int, from time.Time, to ...time.Time) ([]SensorConsumption, error) {
+	toTime := time.Now()
+	if len(to) > 0 {
+		toTime = to[0]
+	}
+
+	parameters := url.Values{}
+	parameters.Set("aggregation", strconv.Itoa(aggregation))
+	parameters.Set("from", strconv.FormatInt(from.UnixNano()/1e6, 10))
+	parameters.Set("to", strconv.FormatInt(toTime.UnixNano()/1e6, 10))
+	parameters.Set("fillGaps", "false")
+
+	res, err := sl.ctx.Smappee.newRequest("GET", "/dev/v3/servicelocation/"+strconv.Itoa(sl.ID)+"/sensor/"+strconv.Itoa(id)+"/consumption", nil, parameters)
+	sensorConsumptionsResponse := sensorConsumptionsResponse{}
+	json.NewDecoder(res.Body).Decode(&sensorConsumptionsResponse)
+
+	if len(sensorConsumptionsResponse.Records) == 0 {
+		return []SensorConsumption{}, ErrorNoDataPoint
+	}
+
+	sensorConsumptions := []SensorConsumption{}
+
+	for _, scr := range sensorConsumptionsResponse.Records {
+		sensorConsumptions = append(sensorConsumptions, convertSensorConsumption(scr))
+	}
+
+	return sensorConsumptions, err
 }
