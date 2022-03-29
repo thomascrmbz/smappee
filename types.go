@@ -127,10 +127,12 @@ type ReactiveConsumption struct {
 
 type MeteringConfiguration struct {
 	Measurements []Measurement
+	Actuators    []Actuator
 }
 
 type meteringConfigurationResponse struct {
-	Measurements []Measurement
+	Measurements []Measurement `json:"measurements"`
+	Actuators    []Actuator    `json:"actuators"`
 	PhaseType    string
 }
 
@@ -139,6 +141,11 @@ type Measurement struct {
 	Name     string
 	Type     string
 	Channels []Channel
+}
+
+type Actuator struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type Channel struct {

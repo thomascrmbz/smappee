@@ -177,3 +177,18 @@ func (sl *ServiceLocation) GetSensorConsumptions(id int, aggregation int, from t
 
 	return sensorConsumptions, err
 }
+
+func (sl *ServiceLocation) SetActuator(id int, state bool, duration int) error {
+	str_state := "off"
+	if state {
+		str_state = "on"
+	}
+
+	_, err := sl.ctx.Smappee.newRequest("POST", "/dev/v3/servicelocation/"+strconv.Itoa(sl.ID)+"/actuator/"+strconv.Itoa(id)+"/"+str_state, struct {
+		Duration int
+	}{
+		Duration: duration,
+	})
+
+	return err
+}
